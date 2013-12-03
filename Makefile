@@ -4,7 +4,7 @@
 # Copyright (C) 2013 Federico "MrModd" Cosentino
 # Version 1.0: 2013/12/03
 #
-# based on Generic Makefile for C/C++ Program
+# Based on Generic Makefile for C/C++ Program
 # by whyglinux <whyglinux AT gmail DOT com>
 # Version: 2008/04/05 (version 0.5)
 # Distributed under the GPL (General Public License)
@@ -58,8 +58,8 @@
 #   $ make           compile and link
 #   $ make NODEP=yes compile and link without generating dependencies
 #   $ make objs      compile only (no linking)
-#   $ make tags      create tags for Emacs editor
-#   $ make ctags     create ctags for VI editor
+#   $ make tags      create tags for Emacs editor (requires etags)
+#   $ make ctags     create ctags for VI editor (reguires ctags)
 #   $ make clean     clean objects and the executable
 #   $ make distclean clean clean objects, the executable, dependencies and tags
 #   $ make help      get the usage of the makefile
@@ -70,7 +70,7 @@
 ##==========================================================================
 
 # The pre-processor and compiler options.
-MY_CFLAGS = -pthread -Wall -Wextra -Werror -pedantic
+MY_CFLAGS =
 
 # The linker options.
 MY_LIBS   =
@@ -80,6 +80,9 @@ CPPFLAGS  =
 
 # The options used in linking as well as in any direct use of ld.
 LDFLAGS   =
+
+# Uncomment this if you need debug symbols
+DBGFLAGS  = -g
 
 # The directories in which source files reside.
 # If not specified, only the current directory will be serached.
@@ -101,20 +104,20 @@ HDREXTS = .h .H .hh .hpp .HPP .h++ .hxx .hp
 
 # The pre-processor and compiler options.
 # Users can override those variables from the command line.
-CFLAGS  = -g -O2
-CXXFLAGS= -g -O2
+CFLAGS   = -O2
+CXXFLAGS = -O2
 
 # The C program compiler.
-#CC     = gcc
+#CC       = gcc
 
 # The C++ program compiler.
-#CXX    = g++
+#CXX      = g++
 
 # Un-comment the following line to compile C programs as C++ ones.
-#CC     = $(CXX)
+#CC       = $(CXX)
 
 # The command used to delete file.
-#RM     = rm -f
+#RM       = rm -f
 
 ETAGS = etags
 ETAGSFLAGS =
@@ -136,6 +139,10 @@ ifeq ($(PROGRAM),)
 endif
 ifeq ($(SRCDIRS),)
   SRCDIRS = .
+endif
+ifneq ($(DBGFLAGS),)
+  CFLAGS += $(DBGFLAGS)
+  CXXFLAGS += $(DBGFLAGS)
 endif
 SOURCES = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(SRCEXTS))))
 HEADERS = $(foreach d,$(SRCDIRS),$(wildcard $(addprefix $(d)/*,$(HDREXTS))))
@@ -251,18 +258,12 @@ else
 $(PROGRAM):$(OBJS)
 endif
 ifeq ($(SRC_CXX),)              # C program
-	$(LINK.c)   $(OBJS) $(MY_LIBS) -o $@
+	$(LINK.c) $(OBJS) $(MY_LIBS) -o $@
 	@echo Type ./$@ to execute the program.
 else                            # C++ program
 	$(LINK.cxx) $(OBJS) $(MY_LIBS) -o $@
 	@echo Type ./$@ to execute the program.
 endif
-
-#ifndef NODEP
-#ifneq ($(DEPS),)
-#  sinclude $(DEPS)
-#endif
-#endif
 
 clean:
 	$(RM) $(OBJS) $(PROGRAM) $(PROGRAM).exe
@@ -272,22 +273,26 @@ distclean: clean
 
 # Show help.
 help:
-	@echo 'Generic Makefile for C/C++ Programs (gcmakefile) version 0.5'
-	@echo 'Copyright (C) 2007, 2008 whyglinux <whyglinux@hotmail.com>'
+	@echo '----------------------------------------------------------------'
+	@echo 'Generic Makefile for C/C++ Programs'
+	@echo 'Copyright (C) 2013 Federico "MrModd" Cosentino'
+	@echo 'Version 1.0: 2013/12/03'
+	@echo '----------------------------------------------------------------'
+	@echo 'Based on Generic Makefile for C/C++ Program'
+	@echo 'by whyglinux <whyglinux AT gmail DOT com>'
+	@echo 'Version: 2008/04/05 (version 0.5)'
 	@echo
 	@echo 'Usage: make [TARGET]'
 	@echo 'TARGETS:'
 	@echo '  all       (=make) compile and link.'
 	@echo '  NODEP=yes make without generating dependencies.'
 	@echo '  objs      compile only (no linking).'
-	@echo '  tags      create tags for Emacs editor.'
-	@echo '  ctags     create ctags for VI editor.'
+	@echo '  tags      create tags for Emacs editor (requires etags).'
+	@echo '  ctags     create ctags for VI editor (requires ctags).'
 	@echo '  clean     clean objects and the executable.'
 	@echo '  distclean clean objects, the executable, dependencies and tags.'
 	@echo '  show      show variables (for debug use only).'
 	@echo '  help      print this message.'
-	@echo
-	@echo 'Report bugs to <whyglinux AT gmail DOT com>.'
 
 # Show variables (for debug use only.)
 show:
@@ -295,6 +300,7 @@ show:
 	@echo 'SRCDIRS     :' $(SRCDIRS)
 	@echo 'HEADERS     :' $(HEADERS)
 	@echo 'SOURCES     :' $(SOURCES)
+	@echo 'INCLUDES    :' $(INCLUDES)
 	@echo 'SRC_CXX     :' $(SRC_CXX)
 	@echo 'OBJS        :' $(OBJS)
 	@echo 'DEPS        :' $(DEPS)
@@ -304,5 +310,4 @@ show:
 	@echo 'link.c      :' $(LINK.c)
 	@echo 'link.cxx    :' $(LINK.cxx)
 
-## End of the Makefile ##  Suggestions are welcome  ## All rights reserved ##
 #############################################################################
