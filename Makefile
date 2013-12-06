@@ -82,7 +82,7 @@ CPPFLAGS  =
 LDFLAGS   =
 
 # Uncomment this if you need debug symbols
-DBGFLAGS  = -g
+#DBGFLAGS  = -g
 
 # The directories in which source files reside.
 # If not specified, only the current directory will be serached.
@@ -274,7 +274,7 @@ distclean: clean
 # Show help.
 help:
 	@echo '----------------------------------------------------------------'
-	@echo 'Generic Makefile for C/C++ Programs'
+	@echo 'Generic Makefile for C/C++ Program'
 	@echo 'Copyright (C) 2013 Federico "MrModd" Cosentino'
 	@echo 'Version 1.0: 2013/12/03'
 	@echo '----------------------------------------------------------------'
